@@ -1,0 +1,159 @@
+# R for Data Science
+This document covers my journey through the R for Data Science content hosted at https://r4ds.hadley.nz/
+
+# 1 Data Visualization
+
+```{r}
+library(tidyverse) # essential for working with tidy data
+
+library(palmerpenguins) # contains datasetYes
+
+library(ggthemes) # themes for ggplot?
+
+```
+
+## Terms
+- Variable: Quantity, quality, or property that you can measure
+- Value: The state of a variable when you measure it
+- Observation: A set of measurements made under similar conditions
+- Tablular data: Set of values, each associated with a variable and an observation
+  - Considered **tidy** if each value is placed in its own cell, each variable it its own column, and each observation in its own row
+- Tibble: An extended dataframe with additional information
+
+```{r}
+
+# Looking at summaries of datasets
+glimpse(penguins)
+View(penguins) # interactive viewer in RStudio
+```
+
+## ggplot Overview
+**aes (Aesthetics)**: Aesthetics of the graph
+**geom (Geometrics)**: Geometrical object to represent data
+
+
+
+## Goal
+Create a visualization to display the relationship between flipper lengths and body masses of the penguin species within the penguins dataset. 
+
+
+```{r}
+ggplot(
+  data=penguins,
+  mapping = aes(x=flipper_length_mm, y=body_mass_g) # aes is aesthetics
+) + 
+  geom_point(mapping = aes(color=species, shape=species)) + # geometrical object to represent data on plot, do species coloring here as to not change ggplot aes
+  geom_smooth(method='lm') + # add best fit line
+  labs(
+    title="Body Mass and Flipper Length",
+    subtitle="Dimensions for Species of Penguins",
+    x="Flipper length (mm)",
+    y="Body mass (g)",
+    color="Species",
+    shape="Species"
+  ) +
+  scale_color_colorblind() # from ggthemes
+```
+
+## Exercises
+
+1. How many rows, columns in penguins?
+From the environment: 344 rows, 8 columns
+```{r}
+df <- penguins
+```
+2. What does bill_depth_mm describe? 
+It is a number denoting bill depth in millimeters
+```{r}
+?penguins
+```
+3. Make scatterplot of bill_depth_mm vs. bill_length_mm (x-axis). Describe relationship.
+Appears to be 2 or 3 clusters. Higher bill depth could have shorter bill length but not in all cases. Suspect species are the clusters. By adding color and shape to points this is confirmed. 
+```{r}
+ggplot(
+  data=penguins,
+  mapping=(aes(x=bill_length_mm, y=bill_depth_mm))
+) +
+  geom_point(mapping=aes(color=species, shape=species))
+```
+4. What happens if you make a scatterplot of species vs. bill_depth_mm? What might be a better choice of geom?
+When making a scatterplot of this data it appears as lines of points which are difficult to interpret. A boxplot would best show this data as we could see the general distribution of bill depth among the species. 
+```{r}
+ggplot(
+  data=penguins,
+  mapping=aes(x=species, y=bill_depth_mm)
+) +
+  geom_boxplot()
+
+```
+5. Why does the following give an error and how would you fix it?
+The error occurs because no x and y values are specified in aesthetics so a geometric object cannot be plotted. Specifically, geom_point() requies x and y to be set in the aesthetics of layer 1, which is ggplot. To fix this, add the variables which are desired to plot. 
+```{r}
+ggplot(data=penguins) +
+  geom_point()
+```
+
+6. What does the na.rm argument do in geom_point()? What is the default value of the argument? Create a scatterplot where you successfully use this argument set to TRUE.
+The na.rm argument determines if missing values are removed with a warning. It is FALSE, by default, but if set to TRUE then missing values are silently removed. This argument can help with hiding the warning that 2 values are removed when plotting previous graphs. 
+```{r}
+#?geom_point()
+ggplot(
+  data=penguins,
+  mapping=aes(x=bill_length_mm, y=flipper_length_mm)
+) +
+  geom_point(na.rm=TRUE)
+
+```
+7. Add the following caption to the plot in Q6: "Data comes from the palmerpenguins package."
+```{r}
+ggplot(
+  data=penguins,
+  mapping=aes(x=bill_length_mm, y=flipper_length_mm)
+) + 
+  geom_point(na.rm=TRUE) +
+  labs(caption="Data comes from the palmerpenguins package.")
+
+```
+8. Recreate the visualization. What aesthetic should bill_depth_mm be mapped to? And should it be mapped at the global level or at the geom level?
+```{r}
+ggplot(
+  data=penguins,
+  mapping=aes(x=flipper_length_mm, y=body_mass_g)
+) +
+  geom_point(mapping=aes(color=bill_depth_mm)) +
+  geom_smooth() # draws a curved line without 'lm'
+
+```
+9. Run this code in your head and predict what the output will look like. Then run the code and check predictions. 
+```{r}
+ggplot(
+  data=penguins,
+  mapping=aes(x=flipper_length_mm, y=body_mass_g, color=island)
+) +
+  geom_point() +
+  geom_smooth(se=FALSE)
+```
+10. Will these two graphs look different? Why/why not?
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point() +
+  geom_smooth()
+
+ggplot() +
+  geom_point(
+    data = penguins,
+    mapping = aes(x = flipper_length_mm, y = body_mass_g)
+  ) +
+  geom_smooth(
+    data = penguins,
+    mapping = aes(x = flipper_length_mm, y = body_mass_g)
+  )
+```
+
+
+
+
