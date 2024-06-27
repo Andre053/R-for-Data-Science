@@ -115,6 +115,7 @@ ggplot(
 
 ```
 8. Recreate the visualization. What aesthetic should bill_depth_mm be mapped to? And should it be mapped at the global level or at the geom level?
+The color aesthetic should be mapped to bill_depth_mm at the geom level so that the mapping does not effect other upper layer additions to the chart, such as geom_smooth().
 ```{r}
 ggplot(
   data=penguins,
@@ -125,16 +126,18 @@ ggplot(
 
 ```
 9. Run this code in your head and predict what the output will look like. Then run the code and check predictions. 
+Prediction: Larger body mass will correlate with longer flipper length (bigger animals). Species will have their own relationships between the variables. The points will form 3 clusters. There will be 3 distinct smooth lines displaying the relationship in each species.
+Check: Did not reflect on island being the color, Biscoe seems to hold mainly penguins with longer flippers and higher body mass. Overall seems to be a positive relation between the factors, as predicted. Species clusters would require additional aesthetics, such as shape. Adding this confirms predictions roughly, though they are hard to identify clearly.
 ```{r}
 ggplot(
   data=penguins,
   mapping=aes(x=flipper_length_mm, y=body_mass_g, color=island)
 ) +
-  geom_point() +
+  geom_point(mapping=aes(shape=species)) +
   geom_smooth(se=FALSE)
 ```
 10. Will these two graphs look different? Why/why not?
-
+Prediction: They will not look different, as they both have the same aesthetic information. Nevertheless, the second option is less efficient and does not take advantage of the layered approach to ggplot graphing. 
 ```{r}
 ggplot(
   data = penguins,
