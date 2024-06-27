@@ -1,7 +1,9 @@
-# R for Data Science
+# **R for Data Science - Whole Game**
 This document covers my journey through the R for Data Science content hosted at https://r4ds.hadley.nz/
 
 # 1 Data Visualization
+
+## First Steps
 
 ```{r}
 library(tidyverse) # essential for working with tidy data
@@ -12,7 +14,7 @@ library(ggthemes) # themes for ggplot?
 
 ```
 
-## Terms
+### Terms
 - Variable: Quantity, quality, or property that you can measure
 - Value: The state of a variable when you measure it
 - Observation: A set of measurements made under similar conditions
@@ -27,13 +29,12 @@ glimpse(penguins)
 View(penguins) # interactive viewer in RStudio
 ```
 
-## ggplot Overview
+### ggplot Overview
 **aes (Aesthetics)**: Aesthetics of the graph
 **geom (Geometrics)**: Geometrical object to represent data
 
 
-
-## Goal
+### Goal
 Create a visualization to display the relationship between flipper lengths and body masses of the penguin species within the penguins dataset. 
 
 
@@ -55,7 +56,7 @@ ggplot(
   scale_color_colorblind() # from ggthemes
 ```
 
-## Exercises
+### Exercises
 
 1. How many rows, columns in penguins?
 From the environment: 344 rows, 8 columns
@@ -156,7 +157,82 @@ ggplot() +
     mapping = aes(x = flipper_length_mm, y = body_mass_g)
   )
 ```
+## 1.3 ggplot2 calls
+Improving conciseness
+```{r}
+# v1
+ggplot(
+  data=penguins,
+  mapping=aes(x=flipper_length_mm, y=body_mass_g)
+) +
+  geom_point()
+
+# v2
+ggplot(penguins, aes(x=flipper_length_mm, y=body_mass_g)) +
+  geom_point()
+
+# v3
+penguins |>
+  ggplot(aes(x=flipper_length_mm, y=body_mass_g)) +
+  geom_point()
+```
+
+## 1.4 Visualizing distributions
+### Categorical variable
+Can only take one of a small set of values. Ex. Species, island
+```{r}
+ggplot(penguins, aes(x=species)) +
+  geom_bar()
+
+ggplot(penguins, aes(x=island)) +
+  geom_bar()
+```
+Order based on frequency
+```{r}
+ggplot(penguins, aes(x=fct_infreq(species))) +
+  geom_bar()
+```
+
+### Numerical variable
+Can take a wide range of numerical values. Can be discrete or continuous.
+
+Histogram divides x-axis into equally spaced bins and shows frequencies. Play with the bin value to best represent the data. 
+```{r}
+ggplot(penguins, aes(x=body_mass_g)) +
+  geom_histogram(binwidth=200)
+```
+Alternative to histogram is a density plot. It displays frequency with a smooth line.
+```{r}
+ggplot(penguins, aes(x=body_mass_g)) +
+  geom_density()
+```
+### Exercises
+1. Make a bar plot of species of penguins, assign species to y. How is this plot different?
+This plot is also showing the counts of species. With the variable being assigned to y the plot displays horizontally instead of vertically. 
+```{r}
+ggplot(penguins, aes(y=species)) +
+  geom_bar()
+```
+2. How are the following plots different? Which aesthetic, color or fill, is more useful for changing the color of bars?
+The plots use color vs. fill in the bar charts. Color is meant to draw lines and strokes, while fill is used to color inside areas of geoms; from this documentation one can predict fill is the better option for bar charts. Executing the code confirms this, as color only outlines the bars.
+```{r}
+ggplot(penguins, aes(x = species)) +
+  geom_bar(color = "red")
+
+ggplot(penguins, aes(x = species)) +
+  geom_bar(fill = "red")
+```
+3. What does the bins argument in geom_histogram() do?
+The bins argument allows one to hardcode the number of bins to display. This will be overridden if binwidths is set (bin count determined dynamically). The default bin count is 30. 
+
+4. Make a histogram of the carat variable in the diamonds dataset. Experiment with different binwidths. What binwidth reveals the most interesting pattern?
+Small binwidth shows the frequency around 1 carat. Lowing the binwidth into small decimal points reveals many peaks of carats all around the 0 to 2 carat range.
+```{r}
+ggplot(diamonds, aes(x=carat)) +
+  geom_histogram(binwidth=0.005)
+```
 
 
+# 2 Workflow: basics
 
 
